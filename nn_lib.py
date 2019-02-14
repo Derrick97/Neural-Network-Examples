@@ -98,7 +98,8 @@ class SigmoidLayer(Layer):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        pass
+        _cache_current = x
+        return sigmoid(x)
 
         #######################################################################
         #                       ** END OF YOUR CODE **
@@ -108,12 +109,12 @@ class SigmoidLayer(Layer):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        pass
-
+        return np.multiply(grad_z, np.multiply(sigmoid(_cache_current), (1 - sigmoid(_cache_current))))
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
-
+    def sigmoid(self, x):
+        return np.divide(1, np.add(np.exp(np.negative(x)), 1.0))
 
 class ReluLayer(Layer):
     """
@@ -128,7 +129,6 @@ class ReluLayer(Layer):
         #                       ** START OF YOUR CODE **
         #######################################################################
         pass
-
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -162,8 +162,9 @@ class LinearLayer(Layer):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        self._W = None
-        self._b = None
+
+        self._W = xavier_init((n_in, n_out))
+        self._b = xavier_init(n_out)
 
         self._cache_current = None
         self._grad_W_current = None
@@ -190,6 +191,10 @@ class LinearLayer(Layer):
         #                       ** START OF YOUR CODE **
         #######################################################################
 
+
+        _cache_current = x
+        return np.add(np.matmult(x, self._W), self._b)
+
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -212,6 +217,10 @@ class LinearLayer(Layer):
         #                       ** START OF YOUR CODE **
         #######################################################################
 
+        self._grad_W_current = np.matmult(np.matrix.transpose(self._cache_current), grad_z)
+        self._grad_b_current = np.matmult(np.array(1 * self.n_in), grad_z)
+        return np.matmult(grad_z, np.matrix.transpose(self._W))
+
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -227,6 +236,8 @@ class LinearLayer(Layer):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
+
+        self._W = np.subtract(self._W, learning_rate * self._grad_W_current)
 
         #######################################################################
         #                       ** END OF YOUR CODE **
