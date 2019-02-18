@@ -383,7 +383,10 @@ class Trainer(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        self._loss_layer = None
+        if loss_fun == "mse":
+            self._loss_layer = MSELossLayer();
+        else:
+            self._loss_layer = CrossEntropyLossLayer();
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -404,7 +407,8 @@ class Trainer(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-
+        p = numpy.random.permutation(len(input_dataset))
+        return (input_dataset[p], target_dataset[p])
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -432,7 +436,19 @@ class Trainer(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-
+        dataset = (input_dataset, target_dataset)
+        for i in range(self.nb_epoch):
+            if self.shuffle_flag == True:
+                dataset = self.shuffle(input_dataset, target_dataset)
+            batches = []
+            for j in range(0, len(input_dataset), self.batch_size):
+                batches.append((input_dataset[j, j + self.batch_size], target_dataset[j, j + self.batch_size]))
+            for k in range(0, len(batches)):
+                z = self.network.forward(batches[k][0])
+                loss = self._loss_layer.forward(z, batches[k][1])
+                grad_z = self._loss_layer.backward()
+                grads = self.network.backward(grad_z)
+                self.network.update_params(self.learning_rate)
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -450,7 +466,8 @@ class Trainer(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-
+        z = self.network.forward(input_dataset)
+        return self._loss_layer.forward(z, target_dataset)
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
