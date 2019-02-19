@@ -298,8 +298,8 @@ class MultiLayerNetwork(object):
         #                       ** START OF YOUR CODE **
         #######################################################################
         input = x
-        for i in range(len(_layers)):
-            input = _layers[i].forward(input) # Call the forward function on all layers
+        for i in range(len(self._layers)):
+            input = self._layers[i].forward(input) # Call the forward function on all layers
         return input # return the output of the last call
         #######################################################################
         #                       ** END OF YOUR CODE **
@@ -324,8 +324,8 @@ class MultiLayerNetwork(object):
         #                       ** START OF YOUR CODE **
         #######################################################################
         input = grad_z
-        for i in range(len(_layers) - 1,-1,-1): # Start from the last layer in the list
-            input = _layers[i].backward(input) # Call the backward function on all layers
+        for i in range(len(self._layers) - 1,-1,-1): # Start from the last layer in the list
+            input = self._layers[i].backward(input) # Call the backward function on all layers
         return input # return the output of the last call
         #######################################################################
         #                       ** END OF YOUR CODE **
@@ -342,8 +342,8 @@ class MultiLayerNetwork(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        for i in range(len(_layers)): # Call update param on all layers
-            _layers[i].update_params(learning_rate)
+        for i in range(len(self._layers)): # Call update param on all layers
+            self._layers[i].update_params(learning_rate)
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
