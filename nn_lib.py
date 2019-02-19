@@ -510,7 +510,10 @@ class Preprocessor(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-
+        self.max = data.max() # Get the maximum value of the data
+        self.min = data.min() # Get the minimum value of the data
+        self.b = 1 # The value the maximum maps to
+        self.a = 0 # The value the minimum maps to
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -528,7 +531,12 @@ class Preprocessor(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-
+        new_data = data.copy() # Copy the data so it doesn't modify the original data
+        for i in range(len(new_data)): # For all data, apply the formula to normalise it
+            # For the formula, see the notes on data normalization (page 40)
+            # Map the values in between 0 and 1 (Can modify a and b in __init__ to change the interval)
+            new_data[i] = self.a + (new_data[i] - self.min) * (self.b - self.a) / (self.max - self.min)
+        return new_data
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -546,7 +554,10 @@ class Preprocessor(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-
+        new_data = data.copy() # Copy the data so it doesn't modify the original data
+        for i in range(len(new_data)): # For all data, revert the function applied in the apply function)
+            new_data[i] = (new_data[i] - self.a) * (self.max - self.min) / (self.b - self.a) + self.min
+        return new_data
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
