@@ -426,7 +426,7 @@ class Trainer(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        p = numpy.random.permutation(len(input_dataset))
+        p = np.random.permutation(len(input_dataset))
         return (input_dataset[p], target_dataset[p])
         #######################################################################
         #                       ** END OF YOUR CODE **
