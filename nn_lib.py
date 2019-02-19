@@ -266,7 +266,19 @@ class MultiLayerNetwork(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        self._layers = None
+        self._layers = []
+        self._layers.append(LinearLayer(input_dim, neurons[0])) # Add the first layer
+        for i in range(len(neurons) - 1):
+            if activations[i] == "relu": # Add the activation layers
+                self._layers.append(ReluLayer())
+            else:
+                self._layers.append(SigmoidLayer())
+            self._layers.append(LinearLayer(neurons[i], neurons[i + 1])) # Add the linear layer
+        if activations[-1] == "relu": # The last activation layer
+            self._layers.append(ReluLayer())
+        else:
+            self._layers.append(SigmoidLayer())
+
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -285,7 +297,10 @@ class MultiLayerNetwork(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-
+        input = x
+        for i in range(len(_layers)):
+            input = _layers[i].forward(input) # Call the forward function on all layers
+        return input # return the output of the last call
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -308,7 +323,10 @@ class MultiLayerNetwork(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-
+        input = grad_z
+        for i in range(len(_layers),-1,-1): # Start from the last layer in the list
+            input = _layers[i].backward(input) # Call the backward function on all layers
+        return input # return the output of the last call
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -324,7 +342,8 @@ class MultiLayerNetwork(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-
+        for i in range(len(_layers)): # Call update param on all layers
+            _layers[i].update_params(learning_rate)
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
