@@ -523,8 +523,8 @@ class Preprocessor(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        self.mins = []
-        self.maxs = []
+        self.mins = np.min(data, axis = 0)
+        self.maxs = np.max(data, axis = 0)
         self.b = 1 # The value the maximum maps to
         self.a = 0 # The value the minimum maps to
         #######################################################################
@@ -545,14 +545,12 @@ class Preprocessor(object):
         #                       ** START OF YOUR CODE **
         #######################################################################
         new_data = data.copy() # Copy the data so it doesn't modify the original data
-        for i in range(len(new_data)): # For all data, apply the formula to normalise it
+        for j in range(len(new_data[0])): # For all data, apply the formula to normalise it
             # For the formula, see the notes on data normalization (page 40)
             # Map the values in between 0 and 1 (Can modify a and b in __init__ to change the interval)
-            min = new_data[i].min()
-            max = new_data[i].max()
-            self.mins.append(min)
-            self.maxs.append(max)
-            for j in range(len(new_data[0])):
+            min = self.mins[j]
+            max = self.maxs[j]
+            for i in range(len(new_data)):
                 new_data[i][j] = self.a + (new_data[i][j] - min) * (self.b - self.a) / (max - min)
         return new_data
         #######################################################################
@@ -573,10 +571,10 @@ class Preprocessor(object):
         #                       ** START OF YOUR CODE **
         #######################################################################
         new_data = data.copy() # Copy the data so it doesn't modify the original data
-        for i in range(len(new_data)): # For all data, revert the function applied in the apply function)
-            min = self.mins[i]
-            max = self.maxs[i]
-            for j in range(len(new_data[0])):
+        for j in range(len(new_data[0])): # For all data, revert the function applied in the apply function)
+            min = self.mins[j]
+            max = self.maxs[j]
+            for i in range(len(new_data)):
                 new_data[i][j] = (new_data[i][j] - self.a) * (max - min) / (self.b - self.a) + min
         return new_data
         #######################################################################
