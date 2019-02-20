@@ -85,6 +85,8 @@ class CrossEntropyLossLayer(Layer):
         n_obs = len(y_target)
         return -1 / n_obs * (y_target - probs)
 
+def sigmoid(x):
+    return np.divide(1, np.add(np.exp(np.negative(x)), 1.0))
 
 class SigmoidLayer(Layer):
     """
@@ -98,7 +100,7 @@ class SigmoidLayer(Layer):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        _cache_current = x
+        self._cache_current = x
         return sigmoid(x)
         #######################################################################
         #                       ** END OF YOUR CODE **
@@ -108,12 +110,18 @@ class SigmoidLayer(Layer):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        return np.multiply(grad_z, np.multiply(sigmoid(_cache_current), (1 - sigmoid(_cache_current))))
+        return np.multiply(grad_z, np.multiply(sigmoid(self._cache_current), (1 - sigmoid(self._cache_current))))
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
-    def sigmoid(self, x):
-        return np.divide(1, np.add(np.exp(np.negative(x)), 1.0))
+
+def relu(x):
+    return np.maximum(x,0)
+
+def relu_derivative(x):
+    x[x<=0] = 0
+    x[x>0] = 1
+    return x
 
 class ReluLayer(Layer):
     """
@@ -127,7 +135,8 @@ class ReluLayer(Layer):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        pass
+        self._cache_current = x
+        return relu(x)
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
@@ -136,11 +145,12 @@ class ReluLayer(Layer):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        pass
+        return np.multiply(grad_z, relu_derivative(self._cache_current))
 
         #######################################################################
         #                       ** END OF YOUR CODE **
         #######################################################################
+
 
 
 class LinearLayer(Layer):
@@ -237,6 +247,7 @@ class LinearLayer(Layer):
         #######################################################################
 
         self._W = np.subtract(self._W, learning_rate * self._grad_W_current)
+        self._b = np.subtract(self._b, learning_rate * self._grad_b_current)
 
         #######################################################################
         #                       ** END OF YOUR CODE **
@@ -606,5 +617,5 @@ def example_main():
     print("Validation accuracy: {}".format(accuracy))
 
 
-if __name__ == "__main__":
-    example_main()
+#if __name__ == "__main__":
+#    example_main()
