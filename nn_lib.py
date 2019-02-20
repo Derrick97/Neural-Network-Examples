@@ -201,8 +201,8 @@ class LinearLayer(Layer):
         #######################################################################
 
 
-        _cache_current = x
-        return np.add(np.matmult(x, self._W), self._b)
+        self._cache_current = x
+        return np.add(np.matmul(x, self._W), self._b)
 
         #######################################################################
         #                       ** END OF YOUR CODE **
@@ -226,9 +226,11 @@ class LinearLayer(Layer):
         #                       ** START OF YOUR CODE **
         #######################################################################
 
-        self._grad_W_current = np.matmult(np.matrix.transpose(self._cache_current), grad_z)
-        self._grad_b_current = np.matmult(np.array(1 * self.n_in), grad_z)
-        return np.matmult(grad_z, np.matrix.transpose(self._W))
+        # print(self.n_in)
+
+        self._grad_W_current = np.matmul(np.matrix.transpose(self._cache_current), grad_z)
+        self._grad_b_current = np.matmul(np.array([1] * len(self._cache_current)), grad_z)
+        return np.matmul(grad_z, np.matrix.transpose(self._W))
 
         #######################################################################
         #                       ** END OF YOUR CODE **
@@ -282,12 +284,12 @@ class MultiLayerNetwork(object):
         for i in range(len(neurons) - 1):
             if activations[i] == "relu": # Add the activation layers
                 self._layers.append(ReluLayer())
-            else:
+            elif activations[i] != "identity":
                 self._layers.append(SigmoidLayer())
             self._layers.append(LinearLayer(neurons[i], neurons[i + 1])) # Add the linear layer
         if activations[-1] == "relu": # The last activation layer
             self._layers.append(ReluLayer())
-        else:
+        elif activations[-1] != "identity":
             self._layers.append(SigmoidLayer())
 
         #######################################################################
@@ -579,6 +581,7 @@ def example_main():
     neurons = [16, 3]
     activations = ["relu", "identity"]
     net = MultiLayerNetwork(input_dim, neurons, activations)
+#    print(len(net._layers))
 
     dat = np.loadtxt("iris.dat")
     np.random.shuffle(dat)
@@ -617,5 +620,5 @@ def example_main():
     print("Validation accuracy: {}".format(accuracy))
 
 
-#if __name__ == "__main__":
-#    example_main()
+if __name__ == "__main__":
+    example_main()
