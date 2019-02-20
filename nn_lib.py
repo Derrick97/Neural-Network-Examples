@@ -422,7 +422,7 @@ class Trainer(object):
         #######################################################################
 
     @staticmethod
-    def shuffle(input_dataset, target_dataset):
+    def shuffle(input_dataset, target_dataset): #tested
         """
         Returns shuffled versions of the inputs.
 
@@ -472,7 +472,7 @@ class Trainer(object):
                 dataset = self.shuffle(input_dataset, target_dataset)
             batches = []
             for j in range(0, len(input_dataset), self.batch_size):
-                batches.append((input_dataset[j, j + self.batch_size], target_dataset[j, j + self.batch_size]))
+                batches.append((input_dataset[j: j + self.batch_size], target_dataset[j: j + self.batch_size]))
             for k in range(0, len(batches)):
                 z = self.network.forward(batches[k][0])
                 loss = self._loss_layer.forward(z, batches[k][1])
