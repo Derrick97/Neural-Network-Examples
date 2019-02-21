@@ -47,6 +47,15 @@ def main():
     )
 
     trainer.train(x_train_pre, y_train)
+    evaluate_architecture(net, trainer, x_train_pre, y_train, x_val_pre, y_val)
+
+    #######################################################################
+    #                       ** END OF YOUR CODE **
+    #######################################################################
+    prep_input2 = Preprocessor(dataset[:split_idx])
+    illustrate_results_FM(net, prep_input2)
+
+def evaluate_architecture(net, trainer, x_train_pre, y_train, x_val_pre, y_val):
     print("Train loss = ", trainer.eval_loss(x_train_pre, y_train))
     print("Validation loss = ", trainer.eval_loss(x_val_pre, y_val))
 
@@ -54,12 +63,6 @@ def main():
     targets = y_val.argmax(axis=1).squeeze()
     accuracy = (preds == targets).mean()
     print("Validation accuracy: {}".format(accuracy))
-
-    #######################################################################
-    #                       ** END OF YOUR CODE **
-    #######################################################################
-    illustrate_results_FM(net, prep_input)
-
 
 if __name__ == "__main__":
     main()
