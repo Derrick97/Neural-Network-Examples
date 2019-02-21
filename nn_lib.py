@@ -586,6 +586,8 @@ def example_main():
     input_dim = 4
     neurons = [16, 3]
     activations = ["relu", "identity"]
+    # neurons = [16, 3]
+    # activations = ["relu", "identity"]
     net = MultiLayerNetwork(input_dim, neurons, activations)
 #    print(len(net._layers))
 
