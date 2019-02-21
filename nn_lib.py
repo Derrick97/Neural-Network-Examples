@@ -523,8 +523,8 @@ class Preprocessor(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
-        self.mins = np.min(data, axis = 0)
-        self.maxs = np.max(data, axis = 0)
+        self.mins = None
+        self.maxs = None
         self.b = 1 # The value the maximum maps to
         self.a = 0 # The value the minimum maps to
         #######################################################################
@@ -544,6 +544,8 @@ class Preprocessor(object):
         #######################################################################
         #                       ** START OF YOUR CODE **
         #######################################################################
+        self.mins = np.min(data, axis = 0)
+        self.maxs = np.max(data, axis = 0)
         new_data = data.copy() # Copy the data so it doesn't modify the original data
         for j in range(len(new_data[0])): # For all data, apply the formula to normalise it
             # For the formula, see the notes on data normalization (page 40)

@@ -16,7 +16,7 @@ def main():
     #                       ** START OF YOUR CODE **
     #######################################################################
     input_dim = 3
-    neurons = [12, 3]
+    neurons = [16, 3]
     activations = ["relu", "identity"]
     net = MultiLayerNetwork(input_dim, neurons, activations)
 
