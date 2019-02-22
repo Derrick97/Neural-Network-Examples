@@ -1,4 +1,6 @@
 import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense
 
 from nn_lib import (
     MultiLayerNetwork,
@@ -15,13 +17,20 @@ def main():
     #######################################################################
     #                       ** START OF YOUR CODE **
     #######################################################################
-    input_dim = 3
-    neurons = [16, 3]
-    activations = ["relu", "identity"]
-    net = MultiLayerNetwork(input_dim, neurons, activations)
+    model = Sequential()
+    model.add(Dense(units = 25, activation = "relu", input_dim = 3))
+    model.add(Dense(units = 3, activation = "softmax"))
 
+    model.compile(loss='mean_squared_error',
+              optimizer='sgd',
+              metrics=['accuracy'])
+
+    # input_dim = 3
+    # neurons = [16, 3]
+    # activations = ["relu", "identity"]
+    # net = MultiLayerNetwork(input_dim, neurons, activations)
+    #
     np.random.shuffle(dataset)
-
     x = dataset[:, :3]
     y = dataset[:, 3:]
 
@@ -29,30 +38,34 @@ def main():
 
     x_train = x[:split_idx]
     y_train = y[:split_idx]
-    x_val = x[split_idx:]
-    y_val = y[split_idx:]
+    x_test = x[split_idx:]
+    y_test = y[split_idx:]
 
-    prep_input = Preprocessor(x_train)
-
-    x_train_pre = prep_input.apply(x_train)
-    x_val_pre = prep_input.apply(x_val)
-
-    trainer = Trainer(
-        network=net,
-        batch_size=10,
-        nb_epoch=100,
-        learning_rate=0.01,
-        loss_fun="mse",
-        shuffle_flag=True,
-    )
-
-    trainer.train(x_train_pre, y_train)
-    evaluate_architecture(net, trainer, x_train_pre, y_train, x_val_pre, y_val)
+    model.fit(x_train, y_train, epochs = 50, batch_size = 10)
+    loss_and_metrics = model.evaluate(x_test, y_test, batch_size=10)
+    print(loss_and_metrics)
+    #
+    # prep_input = Preprocessor(x_train)
+    #
+    # x_train_pre = prep_input.apply(x_train)
+    # x_val_pre = prep_input.apply(x_val)
+    #
+    # trainer = Trainer(
+    #     network=net,
+    #     batch_size=10,
+    #     nb_epoch=100,
+    #     learning_rate=0.01,
+    #     loss_fun="mse",
+    #     shuffle_flag=True,
+    # )
+    #
+    # trainer.train(x_train_pre, y_train)
+    # evaluate_architecture(net, trainer, x_train_pre, y_train, x_val_pre, y_val)
 
     #######################################################################
     #                       ** END OF YOUR CODE **
     #######################################################################
-    illustrate_results_FM(net, prep_input)
+    #illustrate_results_FM(model)
 
 def evaluate_architecture(net, trainer, x_train_pre, y_train, x_val_pre, y_val):
     print("Train loss = ", trainer.eval_loss(x_train_pre, y_train))

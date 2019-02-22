@@ -61,23 +61,17 @@ def illustrate_results_ROI(network, prep, nb_pos=10):
 #     for i in range(nb_pos):
 #         ax = robot.animate(angles[i, :], angles[i + 1, :], ax, prediction[i, :])
 
-def illustrate_results_FM(network, prep, nb_pos=10):
+def illustrate_results_FM(model,nb_pos=10):
 
     data = (
         (np.random.rand(nb_pos + 1, 6) * 2 - 1) * np.pi / 2
     )  # generating 10 cols to match length of dataset, but only the first 3 are used.
     data[0, :] = 0
-    data = prep.apply(data)
-    results = network.forward(data[1:, 0:3][0])
-    print("here results")
-    print(results)
-    results = network.forward(data[1:, 0:3][1])
-    print(results)
-
+    #data = prep.apply(data)
+    results = model.predict(data[1:, 0:3])
     robot = RobotArm()
-
     data[1:, 3:6] = results
-    data = prep.revert(data)
+    #data = prep.revert(data)
 
 
     prediction = data[1:, 3:6]
