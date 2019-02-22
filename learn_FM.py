@@ -52,8 +52,7 @@ def main():
     #######################################################################
     #                       ** END OF YOUR CODE **
     #######################################################################
-    prep_input2 = Preprocessor(dataset[:split_idx])
-    illustrate_results_FM(net, prep_input2)
+    illustrate_results_FM(net, prep_input)
 
 def evaluate_architecture(net, trainer, x_train_pre, y_train, x_val_pre, y_val):
     print("Train loss = ", trainer.eval_loss(x_train_pre, y_train))
