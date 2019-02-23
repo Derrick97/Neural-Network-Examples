@@ -17,7 +17,7 @@ def main():
     #                       ** START OF YOUR CODE **
     #######################################################################
     input_dim = 3
-    neurons = [16, 4]
+    neurons = [64, 4]
     activations = ["relu", "identity"]
     net = MultiLayerNetwork(input_dim, neurons, activations)
 
@@ -43,7 +43,7 @@ def main():
         batch_size=10,
         nb_epoch=100,
         learning_rate=0.01,
-        loss_fun="mse",
+        loss_fun="cross_entropy",
         shuffle_flag=True,
     )
 
@@ -53,7 +53,7 @@ def main():
     one_hot_prediction[np.arange(len(prediction)), prediction.argmax(1)] = 1
     evaluate_architecture(net, trainer, x_train_pre, y_train, x_val_pre, y_val, one_hot_prediction)
     # Put the x value in validation set with the predicted y value in a ndarray
-    output = np.concatenate((x_val_pre,one_hot_prediction), axis=1)
+    output = np.concatenate((x_val_pre,prediction), axis=1)
     # Prep the data
     prep_output = Preprocessor(output)
     #######################################################################
