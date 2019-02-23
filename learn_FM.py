@@ -48,11 +48,14 @@ def main():
 
     trainer.train(x_train_pre, y_train)
     evaluate_architecture(net, trainer, x_train_pre, y_train, x_val_pre, y_val)
-
+    # Put the x value in validation set with the predicted y value in a ndarray
+    output = np.concatenate((x_val_pre,net(x_val_pre)), axis=1)
+    # Prep the data
+    prep_output = Preprocessor(output)
     #######################################################################
     #                       ** END OF YOUR CODE **
     #######################################################################
-    illustrate_results_FM(net, prep_input)
+    illustrate_results_FM(net, prep_output)
 
 def evaluate_architecture(net, trainer, x_train_pre, y_train, x_val_pre, y_val):
     print("Train loss = ", trainer.eval_loss(x_train_pre, y_train))
