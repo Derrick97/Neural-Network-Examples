@@ -49,8 +49,8 @@ def construct_model():
     y = dataset[:, 3:]
 
     split_idx = int(0.8 * len(x))
-    p = Preprocessor(x)
-    p.apply(x)
+    #p = Preprocessor(x)
+    #p.apply(x)
 
     x_train = x[:split_idx]
     y_train = y[:split_idx]
@@ -59,9 +59,9 @@ def construct_model():
 
     model.fit(x_train, y_train, epochs = 50, batch_size = 10)
     #y_pred = model.predict(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01]]))#,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]]))
-    # y_ = y_test[900:]
+    #y_ = y_test[900:]
     #print(y_pred[0])
-    # print(y_[0])
+    #print(y_[0])
 
     evaluate_architecture(model, x_test, y_test)
     #save_network(model, "/homes/jr2216/neuralnetworks_34/model.dat")
@@ -88,6 +88,6 @@ def evaluate_architecture(model, x_test, y_test):
 
 model = construct_model()
 
-if __name__ == "__main__":
-    main()
-    #predict_hidden(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]]))
+# if __name__ == "__main__":
+#     main()
+print(predict_hidden(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]])))
