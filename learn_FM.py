@@ -1,6 +1,9 @@
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.wrappers.scikit_learn import KerasRegressor
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import mean_squared_error, r2_score
 from keras import optimizers
 
 from nn_lib import (
@@ -21,22 +24,41 @@ def r_square(y_true, y_pred):
     SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
     return (1 - SS_res/(SS_tot + K.epsilon()))
 
+def create_model(activation="relu", neuron_no=300):
+    model = Sequential()
+    model.add(Dense(units = neuron_no, activation = activation, input_dim = 3))
+    #model.add(Dense(units = 50, activation = "sigmoid"))
+    model.add(Dense(units = 3, activation = "linear"))
+
+    model.compile(loss='mean_squared_error',
+              optimizer= 'Nadam',
+              metrics=[r_square])
+    return model
+
 
 def construct_model():
     dataset = np.loadtxt("FM_dataset.dat")
     #######################################################################
     #                       ** START OF YOUR CODE **
     #######################################################################
-    model = Sequential()
-    model.add(Dense(units = 300, activation = "relu", input_dim = 3))
-    #model.add(Dense(units = 50, activation = "sigmoid"))
-    model.add(Dense(units = 3, activation = "linear"))
 
-    sgd = optimizers.SGD(lr = 0.01, decay = 0.0, clipnorm = 1);
+    # Model for hyperparameter search
+    model = KerasRegressor(build_fn=create_model)
 
-    model.compile(loss='mean_squared_error',
-              optimizer= 'Nadam',
-              metrics=[r_square])
+    # Parameters
+    activations = ["relu", "sigmoid"]
+    neuron_no = [50, 100, 150, 200, 250, 300, 350, 400]
+    epochs = [5]
+    batch_size = [10]
+
+    # Create a dictionary that contains all parameters
+    param_grid = dict(activation=activations,
+                        neuron_no=neuron_no,
+                        epochs=epochs,
+                        batch_size=batch_size)
+
+    # Create the grid search
+    grid = GridSearchCV(estimator=model, param_grid=param_grid, scoring="r2")
 
     # input_dim = 3
     # neurons = [16, 3]
@@ -57,16 +79,23 @@ def construct_model():
     x_test = x[split_idx:]
     y_test = y[split_idx:]
 
-    model.fit(x_train, y_train, epochs = 50, batch_size = 10)
+    # Run the grid search and print the accuracy of the best one
+    grid_result = grid.fit(x_train, y_train)
+    print("Best result: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+
+    # Get the best network from grid search
+    best_model = grid.best_estimator_
+
+    #model.fit(x_train, y_train, epochs = 50, batch_size = 10)
     #y_pred = model.predict(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01]]))#,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]]))
     #y_ = y_test[900:]
     #print(y_pred[0])
     #print(y_[0])
 
-    evaluate_architecture(model, x_test, y_test)
+    evaluate_architecture(best_model, x_test, y_test)
     #save_network(model, "/homes/jr2216/neuralnetworks_34/model.dat")
 
-    return model
+    return best_model
     #######################################################################
     #                       ** END OF YOUR CODE **
     #######################################################################
@@ -81,10 +110,16 @@ def predict_hidden(new_dataset):
 
 
 def evaluate_architecture(model, x_test, y_test):
-    loss_and_metrics = model.evaluate(x_test, y_test, batch_size=10)
+    #loss_and_metrics = model.evaluate(x_test, y_test, batch_size=10)
+    prediction = model.predict(x_test, batch_size=10)
 
-    print("Test Mean Squared Error = ", loss_and_metrics[0])
-    print("Test R-Squared Value: {}".format(loss_and_metrics[1]))
+    print(prediction)
+
+    error = mean_squared_error(y_test, prediction)
+    r2 = r2_score(y_test, prediction)
+
+    print("Test Mean Squared Error = ", error)
+    print("Test R-Squared Value: {}".format(r2))
 
 model = construct_model()
 
