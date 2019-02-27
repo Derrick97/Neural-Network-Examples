@@ -2,7 +2,7 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasRegressor
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import mean_squared_error, r2_score
 from keras import optimizers
 import itertools
@@ -31,10 +31,15 @@ def create_model(param_combinations=(1, (["relu"], [300]))): #combination = (no.
     neuron_no_list = param_combinations[1][1]
     for i in range(param_combinations[0]):
         activation = activation_list[i]
-        neuron_no = neuron_no_list[i]
-        model.add(Dense(units = neuron_no, activation = activation, input_dim = 3))
-        #model.add(Dense(units = 50, activation = "sigmoid"))
-        model.add(Dense(units = 3, activation = "linear"))
+        if i == param_combinations[0] - 1:
+            neuron_no = 3
+        else:
+            neuron_no = neuron_no_list[i]
+        if i == 0:
+            model.add(Dense(units = neuron_no, activation = activation, input_dim = 3))
+        else:
+            #model.add(Dense(units = 50, activation = "sigmoid"))
+            model.add(Dense(units = neuron_no, activation = activation))
 
     model.compile(loss='mean_squared_error',
               optimizer= 'Nadam',
@@ -51,8 +56,11 @@ def generate_param_tuple(activations, neuron_no, no_of_layers):
         for i in range(n - 1):
             ac_list = list(itertools.product(ac_list, activations))
             ac_list = [a + b for (a, b) in ac_list]
-            neu_no_list = list(itertools.product(neu_no_list, neuron_no))
-            neu_no_list = [a + b for (a, b) in neu_no_list]
+            if i != n - 2:
+                neu_no_list = list(itertools.product(neu_no_list, neuron_no))
+                neu_no_list = [a + b for (a, b) in neu_no_list]
+        if n == 1:
+            neu_no_list = [[]]
         final_list = list(itertools.product(ac_list, neu_no_list))
         final_list = [(n, x) for x in final_list]
         result = result + final_list
@@ -70,9 +78,9 @@ def construct_model():
     model = KerasRegressor(build_fn=create_model)
 
     # Parameters
-    activations = [["relu"], ["sigmoid"]]
-    neuron_no = [[50], [100], [150], [200], [250], [300], [350], [400]]
-    no_of_layers = [1, 2, 3, 4]
+    activations = [["relu"], ["sigmoid"], ["linear"]]
+    neuron_no = [[50], [100]]
+    no_of_layers = [2, 3]
     param_combinations = generate_param_tuple(activations, neuron_no, no_of_layers)
     epochs = [5]
     batch_size = [10]
@@ -83,7 +91,7 @@ def construct_model():
                         batch_size=batch_size)
 
     # Create the grid search
-    grid = GridSearchCV(estimator=model, param_grid=param_grid, scoring="r2")
+    grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid, scoring="r2", verbose=20)
 
     # input_dim = 3
     # neurons = [16, 3]
@@ -151,3 +159,5 @@ model = construct_model()
 # if __name__ == "__main__":
 #     main()
 print(predict_hidden(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]])))
+
+# print(generate_param_tuple([["relu"], ["sigmoid"], ["linear"]], [[50], [100]], [1,2,3]))
