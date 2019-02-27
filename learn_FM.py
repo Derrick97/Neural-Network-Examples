@@ -1,8 +1,8 @@
 import numpy as np
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasRegressor
-from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from sklearn.metrics import mean_squared_error, r2_score
 from keras import optimizers
 import itertools
@@ -90,8 +90,11 @@ def construct_model():
                         epochs=epochs,
                         batch_size=batch_size)
 
-    # Create the grid search
+    # Create the random search
     grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid, scoring="r2", verbose=20)
+
+    # Create the grid search
+    # grid = GridSearchCV(estimator=model, param_distributions=param_grid, scoring="r2", verbose=20)
 
     # input_dim = 3
     # neurons = [16, 3]
@@ -119,6 +122,8 @@ def construct_model():
     # Get the best network from grid search
     best_model = grid.best_estimator_
 
+    best_model.model.save('my_model.h5')
+
     #model.fit(x_train, y_train, epochs = 50, batch_size = 10)
     #y_pred = model.predict(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01]]))#,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]]))
     #y_ = y_test[900:]
@@ -139,6 +144,7 @@ def construct_model():
 def predict_hidden(new_dataset):
     #model = load_network("/homes/jr2216/neuralnetworks_34/model.dat")
     x = new_dataset[:, :3]
+    model = load_model('my_model.h5', custom_objects={'r_square': r_square})
     return model.predict(x)
 
 
