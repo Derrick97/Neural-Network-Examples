@@ -146,7 +146,7 @@ def evaluate_architecture(model, x_test, y_test):
     #loss_and_metrics = model.evaluate(x_test, y_test, batch_size=10)
     prediction = model.predict(x_test, batch_size=10)
 
-    print(prediction)
+    # print(prediction)
 
     error = mean_squared_error(y_test, prediction)
     r2 = r2_score(y_test, prediction)
