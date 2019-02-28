@@ -80,7 +80,7 @@ def construct_model():
     # Parameters
     activations = [["relu"], ["sigmoid"], ["linear"], ["tanh"]]
     neuron_no = [[25], [50], [75], [100]]
-    no_of_layers = [2, 3]
+    no_of_layers = [2, 3, 4]
     param_combinations = generate_param_tuple(activations, neuron_no, no_of_layers)
     epochs = [20]
     batch_size = [10, 20, 30]
@@ -91,10 +91,10 @@ def construct_model():
                         batch_size=batch_size)
 
     # Create the random search
-    grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid, scoring="r2", verbose=20)
+    # grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid, scoring="r2", verbose=20)
 
     # Create the grid search
-    # grid = GridSearchCV(estimator=model, param_distributions=param_grid, scoring="r2", verbose=20)
+    grid = GridSearchCV(estimator=model, param_distributions=param_grid, scoring="r2", verbose=20)
 
     # input_dim = 3
     # neurons = [16, 3]
