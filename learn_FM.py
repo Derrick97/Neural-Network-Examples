@@ -122,7 +122,7 @@ def construct_model():
     # Get the best network from grid search
     best_model = grid.best_estimator_
 
-    best_model.model.save('my_model_3_layers.h5')
+    #best_model.model.save('my_model_3_layers.h5')
 
     #model.fit(x_train, y_train, epochs = 50, batch_size = 10)
     #y_pred = model.predict(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01]]))#,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]]))
@@ -144,7 +144,7 @@ def construct_model():
 def predict_hidden(new_dataset):
     #model = load_network("/homes/jr2216/neuralnetworks_34/model.dat")
     x = new_dataset[:, :3]
-    model = load_model('my_model.h5', custom_objects={'r_square': r_square})
+    model = load_model('model001.h5', custom_objects={'r_square': r_square})
     return model.predict(x)
 
 
@@ -160,7 +160,7 @@ def evaluate_architecture(model, x_test, y_test):
     print("Test Mean Squared Error = ", error)
     print("Test R-Squared Value: {}".format(r2))
 
-model = construct_model()
+#model = construct_model()
 
 # if __name__ == "__main__":
 #     main()
