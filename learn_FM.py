@@ -94,7 +94,7 @@ def construct_model():
     # grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid, scoring="r2", verbose=20)
 
     # Create the grid search
-    grid = GridSearchCV(estimator=model, param_distributions=param_grid, scoring="r2", verbose=20)
+    grid = GridSearchCV(estimator=model, param_grid=param_grid, scoring="r2", verbose=20)
 
     # input_dim = 3
     # neurons = [16, 3]
