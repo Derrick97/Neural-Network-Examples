@@ -79,8 +79,8 @@ def construct_model():
 
     # Parameters
     activations = [["relu"], ["sigmoid"], ["linear"]]
-    neuron_no = [[25], [50], [75], [100]]
-    no_of_layers = [2, 3, 4]
+    neuron_no = [[25], [50]]
+    no_of_layers = [2, 3]
     param_combinations = generate_param_tuple(activations, neuron_no, no_of_layers)
     epochs = [5]
     batch_size = [10, 20]
