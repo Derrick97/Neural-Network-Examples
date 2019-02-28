@@ -1,6 +1,7 @@
 import numpy as np
 from keras.models import Sequential, load_model
 from keras.layers import Dense
+from keras import optimizers
 from keras.wrappers.scikit_learn import KerasRegressor
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from sklearn.metrics import mean_squared_error, r2_score
@@ -25,7 +26,7 @@ def r_square(y_true, y_pred):
     SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
     return (1 - SS_res/(SS_tot + K.epsilon()))
 
-def create_model(param_combinations=(1, (["relu"], [300]))): #combination = (no. of layers, (activations, neuron_no))
+def create_model(param_combinations=(1, (["relu"], [300])), opt_fnt = "Nadam", learning_rate=0.002, epsilon=None, schedule_decay=0.004): #combination = (no. of layers, (activations, neuron_no))
     model = Sequential()
     activation_list = param_combinations[1][0]
     neuron_no_list = param_combinations[1][1]
@@ -41,8 +42,9 @@ def create_model(param_combinations=(1, (["relu"], [300]))): #combination = (no.
             #model.add(Dense(units = 50, activation = "sigmoid"))
             model.add(Dense(units = neuron_no, activation = activation))
 
+    opt = optimizers.Nadam(lr=learning_rate, epsilon=epsilon, schedule_decay=schedule_decay)
     model.compile(loss='mean_squared_error',
-              optimizer= 'Nadam',
+              optimizer= opt,
               metrics=[r_square])
     return model
 
@@ -81,12 +83,17 @@ def construct_model():
     activations = [["relu"], ["sigmoid"], ["linear"], ["tanh"]]
     neuron_no = [[25], [50], [75], [100]]
     no_of_layers = [2, 3, 4]
-    param_combinations = generate_param_tuple(activations, neuron_no, no_of_layers)
-    epochs = [20]
-    batch_size = [10, 20, 30]
+    param_combinations = [(3, (['relu', 'relu', 'linear'], [100, 100]))]
+    epochs = [5]
+    batch_size = [10]
+    learning_rate = [0.0005, 0.001 , 0.002, 0.01]
+    schedule_decay = [0.002 , 0.004, 0.008, 0.016, 0.032]
+
 
     # Create a dictionary that contains all parameters
-    param_grid = dict(param_combinations=param_combinations,
+    param_grid = dict(param_combinations=param_combinations, 
+                        learning_rate= learning_rate,
+                        schedule_decay=schedule_decay,
                         epochs=epochs,
                         batch_size=batch_size)
 
