@@ -80,7 +80,7 @@ def construct_model():
     # Parameters
     activations = [["relu"], ["sigmoid"], ["linear"]]
     neuron_no = [[25], [50]]
-    no_of_layers = [2]
+    no_of_layers = [3]
     param_combinations = generate_param_tuple(activations, neuron_no, no_of_layers)
     epochs = [40]
     batch_size = [10]
@@ -122,7 +122,7 @@ def construct_model():
     # Get the best network from grid search
     best_model = grid.best_estimator_
 
-    best_model.model.save('my_model_2_layers.h5')
+    best_model.model.save('my_model_3_layers.h5')
 
     #model.fit(x_train, y_train, epochs = 50, batch_size = 10)
     #y_pred = model.predict(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01]]))#,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]]))
