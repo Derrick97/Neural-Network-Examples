@@ -78,12 +78,12 @@ def construct_model():
     model = KerasRegressor(build_fn=create_model)
 
     # Parameters
-    activations = [["relu"], ["sigmoid"], ["linear"]]
-    neuron_no = [[50], [100]]
+    activations = [["relu"], ["sigmoid"], ["linear"], ["tanh"]]
+    neuron_no = [[25], [50], [75], [100]]
     no_of_layers = [2, 3]
     param_combinations = generate_param_tuple(activations, neuron_no, no_of_layers)
-    epochs = [5]
-    batch_size = [10]
+    epochs = [20]
+    batch_size = [10, 20, 30]
 
     # Create a dictionary that contains all parameters
     param_grid = dict(param_combinations=param_combinations,
