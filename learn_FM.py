@@ -6,6 +6,7 @@ from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from sklearn.metrics import mean_squared_error, r2_score
 from keras import optimizers
 import itertools
+import sys
 
 from nn_lib import (
     MultiLayerNetwork,
