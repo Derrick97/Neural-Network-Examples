@@ -6,6 +6,7 @@ from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from keras.optimizers import *
 import itertools
+import sys
 
 
 from nn_lib import (
@@ -64,9 +65,6 @@ def create_model(param_combinations=(2, (["relu", "softmax"], [512, 4]))): #comb
 
 def main():
     dataset = np.loadtxt("ROI_dataset.dat")
-    #######################################################################
-    #                       ** START OF YOUR CODE **
-    #######################################################################
     np.random.shuffle(dataset)
 
     x = dataset[:, :3]
@@ -82,7 +80,7 @@ def main():
     model = KerasClassifier(build_fn=create_model)
 
 
-
+    # Code for Q2.1
     # model = Sequential()
     # model.add(Dense(units = 512, activation = "relu", input_dim = 3))
     # model.add(Dense(units = 4, activation = "softmax"))
@@ -97,8 +95,6 @@ def main():
     # model.fit(x_train, y_train)
     # prediction = model.predict_proba(x_test, batch_size=10)
     # print(prediction)
-
-    #  batch_size=10, epochs=10, param_combinations=(3, (['relu', 'relu', 'softmax'], [500, 400]))
 
     # Parameters
     activations = [["relu"], ["sigmoid"], ["softmax"], ["linear"]]
@@ -132,50 +128,7 @@ def main():
 
     return best_model
 
-
-    # input_dim = 3
-    # neurons = [64, 4]
-    # activations = ["relu", "softmax"]
-    # net = MultiLayerNetwork(input_dim, neurons, activations)
-    #
-
-
-    # model.fit(x_train, y_train, epochs = 50, batch_size = 10)
-    # # print(model.predict(np.array([[-1.570796326794896558e+00,-1.439896632895321771e+00,-1.439896632895321771e+00]])))
-    #
-    # model.summary()
-    #
-    # evaluate_architecture(model, x_test, y_test)
-    #
-    # prep_input = Preprocessor(x_train)
-    #
-    # x_train_pre = prep_input.apply(x_train)
-    # x_val_pre = prep_input.apply(x_val)
-    #
-    # trainer = Trainer(
-    #     network=net,
-    #     batch_size=10,
-    #     nb_epoch=100,
-    #     learning_rate=0.01,
-    #     loss_fun="cross_entropy",
-    #     shuffle_flag=True,
-    # )
-    #
-    # trainer.train(x_train_pre, y_train)
-    # prediction = net(x_val_pre)
-    # print(prediction)
-    # one_hot_prediction = np.zeros_like(prediction)
-    # one_hot_prediction[np.arange(len(prediction)), prediction.argmax(1)] = 1
-    # evaluate_architecture(net, trainer, x_train_pre, y_train, x_val_pre, y_val, one_hot_prediction)
-    # # Put the x value in validation set with the predicted y value in a ndarray
-    # output = np.concatenate((x_val_pre,prediction), axis=1)
-    # # Prep the data
-    # prep_output = Preprocessor(output)
-    #######################################################################
-    #                       ** END OF YOUR CODE **
-    #######################################################################
-    # illustrate_results_ROI(net, prep_output)
-
+# Change one-hot encoding into list of labels.
 def preprocess_one_hot_encoding(one_hots):
     labels = []
     for list_of_labels in one_hots:
@@ -184,6 +137,7 @@ def preprocess_one_hot_encoding(one_hots):
                 labels.append(index)
     return labels
 
+# Calculate accuracy based on labels generates from one-hot encoding.
 def accuracy_one_hot(y_true, y_pred):
     true = 0
     for i in range(len(y_true)):
@@ -191,24 +145,22 @@ def accuracy_one_hot(y_true, y_pred):
             true += 1
     return true/len(y_true)
 
+# Calculate cross entropy for two lists.
 def cross_entropy_func(y_true, y_pred):
     ep = 1e-12
     predictions = np.clip(y_pred, ep, 1. - ep)
     sample_number = len(predictions)
     return -np.sum(np.log(predictions) * y_true)/sample_number
 
-
+# Take the trained model, and then test on test set to get the cross-entropy and accuracy.
 def evaluate_architecture(model, x_test, y_test):
+    # Get predictions in list of probablity form.
     prediction = model.predict_proba(x_test, batch_size=10)
     y_test_labels = preprocess_one_hot_encoding(y_test)
-
-
     cross_entropy = cross_entropy_func(y_test, prediction)
 
     label_predictions = prediction.argmax(axis=1).squeeze()
     accuracy = accuracy_one_hot(y_test_labels, label_predictions)
-
-    #loss_and_metrics = model.evaluate(x_test, y_test, batch_size=10)
 
     print("Test Cross Entropy = ", cross_entropy)
     print("Test accuracy: {}".format(accuracy))
@@ -218,6 +170,6 @@ def predict_hidden(new_dataset):
     model = load_model('my_model2.h5')
     return model.predict(x)
 
-
-# if __name__ == "__main__":
-#     main()
+filename = sys.argv[1]
+new_dataset = np.loadtxt(filename)
+print(predict_hidden(new_dataset))
