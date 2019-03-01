@@ -80,7 +80,7 @@ def main():
     model = KerasClassifier(build_fn=create_model)
 
 
-    # Code for Q2.1
+    # Code for Q3.1
     # model = Sequential()
     # model.add(Dense(units = 512, activation = "relu", input_dim = 3))
     # model.add(Dense(units = 4, activation = "softmax"))
