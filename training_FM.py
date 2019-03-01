@@ -72,7 +72,7 @@ def construct_model():
 
     model.fit(x_train, y_train, epochs = 100, batch_size = 10)
 
-    model.save('model001.h5')
+    model.save('model002.h5')
 
     evaluate_architecture(model, x_test, y_test)
 

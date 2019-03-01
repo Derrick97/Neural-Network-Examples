@@ -18,29 +18,33 @@ from illustrate import illustrate_results_FM
 
 global best_model
 
-
+# Function for calculaing the r-square value
 def r_square(y_true, y_pred):
     from keras import backend as K
     SS_res =  K.sum(K.square(y_true - y_pred))
     SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
     return (1 - SS_res/(SS_tot + K.epsilon()))
 
+# Function for creating the model
 def create_model(param_combinations=(1, (["relu"], [300]))): #combination = (no. of layers, (activations, neuron_no))
     model = Sequential()
+    # Get thn list of activation function and neuron number from the tuple
     activation_list = param_combinations[1][0]
     neuron_no_list = param_combinations[1][1]
+    # For loop for adding all layers
     for i in range(param_combinations[0]):
+        # Get the activation function for this layer
         activation = activation_list[i]
-        if i == param_combinations[0] - 1:
+        if i == param_combinations[0] - 1: # If this is the last layer, the number of neuron is 3
             neuron_no = 3
-        else:
+        else: # Otherwise, get the number of neuron for this layer from the list
             neuron_no = neuron_no_list[i]
-        if i == 0:
+        if i == 0: # If it is the first layer, specify input_dim = 3
             model.add(Dense(units = neuron_no, activation = activation, input_dim = 3))
         else:
-            #model.add(Dense(units = 50, activation = "sigmoid"))
             model.add(Dense(units = neuron_no, activation = activation))
 
+    # Compile the model
     model.compile(loss='mean_squared_error',
               optimizer= 'Nadam',
               metrics=[r_square])
@@ -82,34 +86,29 @@ def construct_model():
     neuron_no = [[25], [50]]
     no_of_layers = [3]
     param_combinations = generate_param_tuple(activations, neuron_no, no_of_layers)
-    epochs = [40]
-    batch_size = [10]
+    epochs = [5]
+    batch_size = [10, 20, 30]
 
     # Create a dictionary that contains all parameters
     param_grid = dict(param_combinations=param_combinations,
                         epochs=epochs,
                         batch_size=batch_size)
 
-    # Create the random search
-    # grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid, scoring="r2", verbose=20)
 
     # Create the grid search
     grid = GridSearchCV(estimator=model, param_grid=param_grid, scoring="r2", verbose=20)
 
-    # input_dim = 3
-    # neurons = [16, 3]
-    # activations = ["relu", "identity"]
-    # net = MultiLayerNetwork(input_dim, neurons, activations)
-    #
+    # Shuffle the dataset
     np.random.shuffle(dataset)
 
+    # Split the data into x and y
     x = dataset[:, :3]
     y = dataset[:, 3:]
 
+    # Index of spliting the training ant testing set
     split_idx = int(0.8 * len(x))
-    #p = Preprocessor(x)
-    #p.apply(x)
 
+    # Spli x and y into training ant testing set
     x_train = x[:split_idx]
     y_train = y[:split_idx]
     x_test = x[split_idx:]
@@ -122,16 +121,10 @@ def construct_model():
     # Get the best network from grid search
     best_model = grid.best_estimator_
 
-    #best_model.model.save('my_model_3_layers.h5')
-
-    #model.fit(x_train, y_train, epochs = 50, batch_size = 10)
-    #y_pred = model.predict(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01]]))#,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]]))
-    #y_ = y_test[900:]
-    #print(y_pred[0])
-    #print(y_[0])
+    # Save the best model
+    best_model.model.save('my_model.h5')
 
     evaluate_architecture(best_model, x_test, y_test)
-    #save_network(model, "/homes/jr2216/neuralnetworks_34/model.dat")
 
     return best_model
     #######################################################################
@@ -142,28 +135,29 @@ def construct_model():
 
 
 def predict_hidden(new_dataset):
-    #model = load_network("/homes/jr2216/neuralnetworks_34/model.dat")
+    # Get the x for the new dtaset
     x = new_dataset[:, :3]
+    # Load the best model trained
     model = load_model('model001.h5', custom_objects={'r_square': r_square})
+    # Return the prediction
     return model.predict(x)
 
 
 def evaluate_architecture(model, x_test, y_test):
-    #loss_and_metrics = model.evaluate(x_test, y_test, batch_size=10)
+    # Get the predicionn of the model
     prediction = model.predict(x_test, batch_size=10)
 
-    # print(prediction)
-
+    # Calculate the mean-square error and the r2 score
     error = mean_squared_error(y_test, prediction)
     r2 = r2_score(y_test, prediction)
 
+    # Print the result
     print("Test Mean Squared Error = ", error)
     print("Test R-Squared Value: {}".format(r2))
 
-#model = construct_model()
+# model = construct_model()
 
-# if __name__ == "__main__":
-#     main()
-print(predict_hidden(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]])))
-
-# print(generate_param_tuple([["relu"], ["sigmoid"], ["linear"]], [[50], [100]], [1,2,3]))
+# print(predict_hidden(np.array([[1.570796326794896558e+00,1.439896632895321549e+00,-5.235987755982989267e-01,4.684735272501165284e-15,1.094144784178339336e+02,6.310930546237394765e+02]])))
+filename = sys.argv[1]
+new_dataset = np.loadtxt(filename)
+print(predict_hidden(new_dataset))
