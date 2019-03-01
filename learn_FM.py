@@ -145,7 +145,11 @@ def predict_hidden(new_dataset):
 
 
 def evaluate_architecture(model, x_test, y_test):
-    # Get the predicionn of the model
+    # Calculate the loss metrics and print
+    loss_and_metrics = model.evaluate(x_test, y_test, batch_size=10)
+    print(loss_and_metrics)
+
+    # Get the prediction of the model
     prediction = model.predict(x_test, batch_size=10)
 
     # Calculate the mean-square error and the r2 score
